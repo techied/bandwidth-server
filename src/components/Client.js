@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import Button from "./Button";
 
-const Client = ({key, client, onRemove}) => {
+const Client = ({client, onRemove}) => {
     return (
-        <div className="client" key={key}>
+        <div className="client grid grid-cols-4">
             <div className="client-name">
                 {client.name}
             </div>
@@ -14,14 +14,13 @@ const Client = ({key, client, onRemove}) => {
                 {client.status}
             </div>
             <div className="client-remove-button">
-                <Button onClick={() => onRemove(client)} text="Remove Client" color="red"/>
+                <Button onClick={() => onRemove(client)} text="Remove" color="red"/>
             </div>
         </div>
     );
 }
 
 Client.propTypes = {
-    key: PropTypes.string.isRequired,
     client: PropTypes.object.isRequired,
     onRemove: PropTypes.func.isRequired
 }

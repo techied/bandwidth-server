@@ -4,14 +4,13 @@ import PropTypes from 'prop-types'
 const ClientList = ({clients, onRemove}) => {
     return (
         <div className="client-list">
-            {clients ? clients.map(client => <Client key={client.id} client={client}
-                                                     onRemove={onRemove}/>) : 'No clients yet!'}
+            {clients.length > 0 ? clients.map(client => <Client key={client.key} client={client}
+                                                                onRemove={onRemove}/>) : 'No clients yet!'}
         </div>
     )
 }
 
 ClientList.propTypes = {
-    clients: PropTypes.arrayOf(PropTypes.object).isRequired,
     onRemove: PropTypes.func.isRequired
 }
 
