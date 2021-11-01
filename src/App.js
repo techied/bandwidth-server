@@ -26,10 +26,13 @@ const App = () => {
             console.log('client remove ' + key);
             setClients(clients => clients.filter(client => client.key !== key));
         });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 
     const removeClient = (client) => {
+
         const requestOptions = {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
@@ -39,11 +42,8 @@ const App = () => {
     };
 
     return (
-        <div className="App">
-            <div className='grid grid-cols-3'>
-                <div/>
-                <ClientList clients={clients} onRemove={removeClient}/>
-            </div>
+        <div className="App flex justify-center">
+            <ClientList clients={clients} onRemove={removeClient}/>
         </div>
     );
 };

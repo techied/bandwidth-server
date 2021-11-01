@@ -3,7 +3,7 @@ import Button from "./Button";
 
 const Client = ({client, onRemove}) => {
     return (
-        <div className="client grid grid-cols-4">
+        <div className="client grid grid-cols-4 place-items-center">
             <div className="client-name">
                 {client.name}
             </div>
