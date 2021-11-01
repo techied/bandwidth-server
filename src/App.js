@@ -5,7 +5,7 @@ import ClientList from "./components/ClientList";
 
 const socket = io();
 socket.on('connect', function () {
-    console.log('connected');
+    console.log('socket connected');
 });
 
 const App = () => {
@@ -18,17 +18,13 @@ const App = () => {
             }
         });
         socket.on('client add', function (data) {
-            console.log('client add');
-            console.log(clients);
-            setClients([...clients, data]);
-            console.log(clients);
+            console.log('client add' + data);
+            setClients(clients => [...clients, data]);
         });
 
         socket.on('client remove', function (key) {
             console.log('client remove ' + key);
-            setClients(clients.filter(client => {
-                return client.key !== key
-            }));
+            setClients(clients => clients.filter(client => client.key !== key));
         });
     }, []);
 

@@ -18,6 +18,11 @@ let clients = [{
     name: 'Jane Doe',
     ip: '129.0.0.6',
     status: 'online'
+}, {
+    key: 3,
+    name: 'Jimmy John',
+    ip: '129.0.0.7',
+    status: 'offline'
 }];
 
 app.get('/', (req, res) => {
