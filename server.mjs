@@ -37,7 +37,7 @@ let sites = [{
     weight: 100
 }, {
     key: 3,
-    name: 'Site 3',
+    name: 'Google',
     url: 'https://google.com',
     weight: 100
 }]

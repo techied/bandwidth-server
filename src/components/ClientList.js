@@ -3,7 +3,6 @@ import Client from './Client'
 const ClientList = ({clients}) => {
 
     const removeClient = (client) => {
-
         const requestOptions = {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
