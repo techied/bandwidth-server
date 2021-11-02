@@ -2,6 +2,9 @@ import './App.css';
 import io from 'socket.io-client';
 import {useEffect, useState} from "react";
 import ClientList from "./components/ClientList";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Sites from "./components/Sites";
 
 const socket = io();
 socket.on('connect', function () {
@@ -30,20 +33,20 @@ const App = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-
-    const removeClient = (client) => {
-
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({key: client.key})
-        };
-        fetch('/api/clients/remove', requestOptions);
-    };
-
     return (
-        <div className="App flex justify-center">
-            <ClientList clients={clients} onRemove={removeClient}/>
+        <div className="App">
+            <BrowserRouter>
+                <div className='flex justify-center'>
+                    <Navbar/>
+                </div>
+                <div className='flex justify-center'>
+                    <Switch>
+                        <Route path="/" exact
+                               component={() => <ClientList clients={clients}/>}/>
+                        <Route path="/sites" exact component={() => <Sites/>}/>
+                    </Switch>
+                </div>
+            </BrowserRouter>
         </div>
     );
 };

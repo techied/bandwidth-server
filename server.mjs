@@ -25,12 +25,33 @@ let clients = [{
     status: 'offline'
 }];
 
+let sites = [{
+    key: 1,
+    name: 'YouTube',
+    url: 'https://youtube.com',
+    weight: 100
+}, {
+    key: 2,
+    name: 'Amazon',
+    url: 'https://amazon.com',
+    weight: 100
+}, {
+    key: 3,
+    name: 'Site 3',
+    url: 'https://google.com',
+    weight: 100
+}]
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
 app.get('/api/clients', (req, res) => {
     res.json(clients);
+});
+
+app.get('/api/sites', (req, res) => {
+    res.json(sites);
 });
 
 app.delete('/api/clients/remove', jsonParser, (req, res) => {
@@ -40,7 +61,19 @@ app.delete('/api/clients/remove', jsonParser, (req, res) => {
     res.sendStatus(200);
 });
 
-// app.use(bodyParser.json());
+app.delete('/api/sites/remove', jsonParser, (req, res) => {
+    const key = req.body.key;
+    sites = sites.filter(site => site.key !== key);
+    io.emit('site remove', key);
+    res.sendStatus(200);
+});
+
+app.put('/api/sites/add', jsonParser, (req, res) => {
+    const site = req.body;
+    sites.push(site);
+    io.emit('site add', site);
+    res.sendStatus(200);
+});
 
 const server = app.listen(3001, () => {
     console.log('Listening on http://localhost:3001');
