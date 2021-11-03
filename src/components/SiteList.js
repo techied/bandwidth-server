@@ -13,8 +13,22 @@ const SiteList = ({sites}) => {
 
     return (
         <div className="site-list">
-            {sites.length > 0 ? sites.map(site => <Site key={site.key} site={site}
-                                                        onRemove={removeSite}/>) : 'No sites yet!'}
+            {sites.length > 0 ?
+                <table className='table-fixed'>
+                    <thead>
+                    <tr>
+                        <th className='w-60'>Name</th>
+                        <th className='w-60'>URL</th>
+                        <th className='w-20'>Weight</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {sites.map(site =>
+                        <Site key={site.key} site={site} onRemove={removeSite}/>
+                    )}
+                    </tbody>
+                </table>
+                : 'No clients yet'}
         </div>
     );
 }

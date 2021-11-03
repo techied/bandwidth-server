@@ -2,20 +2,21 @@ import Button from "./Button";
 
 const Site = ({site, onRemove}) => {
     return (
-        <div className="site grid grid-cols-4 place-items-center">
-            <div className="site-name">
+        <tr
+            className="site place-items-center border border-8">
+            <td className="site-name">
                 {site.name}
-            </div>
-            <div className="site-url">
+            </td>
+            <td className="site-url border">
                 {site.url}
-            </div>
-            <div className="site-weight">
+            </td>
+            <td className="site-weight h-auto w-auto p-2 m-2">
                 {site.weight}
-            </div>
-            <div className="site-remove-button">
+            </td>
+            <td className="site-remove-button border-l hover:bg-gray-300">
                 <Button onClick={() => onRemove(site)} text="Remove" color="red"/>
-            </div>
-        </div>
+            </td>
+        </tr>
     )
 }
 

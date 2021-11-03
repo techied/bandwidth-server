@@ -3,20 +3,21 @@ import Button from "./Button";
 
 const Client = ({client, onRemove}) => {
     return (
-        <div className="client grid grid-cols-4 place-items-center">
-            <div className="client-name">
+        <tr
+            className="client place-items-center border border-8">
+            <td className="client-name">
                 {client.name}
-            </div>
-            <div className="client-ip">
+            </td>
+            <td className="client-ip border">
                 {client.ip}
-            </div>
-            <div className="client-status">
+            </td>
+            <td className="client-status h-auto w-auto p-2 m-2">
                 {client.status}
-            </div>
-            <div className="client-remove-button">
+            </td>
+            <td className="client-remove-button border-l hover:bg-gray-300">
                 <Button onClick={() => onRemove(client)} text="Remove" color="red"/>
-            </div>
-        </div>
+            </td>
+        </tr>
     );
 }
 

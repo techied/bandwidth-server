@@ -29,7 +29,7 @@ const App = () => {
             }
         });
         socket.on('client add', function (data) {
-            console.log('client add' + data);
+            console.log('client add ' + data);
             setClients(clients => [...clients, data]);
         });
 
@@ -39,7 +39,7 @@ const App = () => {
         });
 
         socket.on('site add', function (data) {
-            console.log('site add' + data);
+            console.log('site add ' + data);
             setSites(sites => [...sites, data]);
         });
 

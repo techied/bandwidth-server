@@ -75,6 +75,14 @@ app.put('/api/sites/add', jsonParser, (req, res) => {
     res.sendStatus(200);
 });
 
+app.put('/api/clients/add', jsonParser, (req, res) => {
+    const client = req.body;
+    console.log(req.body);
+    clients.push(client);
+    io.emit('client add', client);
+    res.sendStatus(200);
+});
+
 const server = app.listen(3001, () => {
     console.log('Listening on http://localhost:3001');
 });
