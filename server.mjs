@@ -9,17 +9,17 @@ app.use(express.static('./build'));
 const jsonParser = bodyParser.json();
 
 let clients = [{
-    key: 1,
+    id: 1,
     name: 'John Doe',
     ip: '127.0.0.1',
     status: 'online'
 }, {
-    key: 2,
+    id: 2,
     name: 'Jane Doe',
     ip: '129.0.0.6',
     status: 'online'
 }, {
-    key: 3,
+    id: 3,
     name: 'Jimmy John',
     ip: '129.0.0.7',
     status: 'offline'
@@ -55,9 +55,9 @@ app.get('/api/sites', (req, res) => {
 });
 
 app.delete('/api/clients/remove', jsonParser, (req, res) => {
-    const key = req.body.key;
-    clients = clients.filter(client => client.key !== key);
-    io.emit('client remove', key);
+    const id = req.body.id;
+    clients = clients.filter(client => client.id !== id);
+    io.emit('client remove', id);
     res.sendStatus(200);
 });
 
