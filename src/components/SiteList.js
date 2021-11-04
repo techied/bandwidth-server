@@ -1,5 +1,6 @@
-import Site from './Site';
-import Button from "./Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {DataGrid} from "@mui/x-data-grid";
+import {Button} from "@mui/material";
 
 const SiteList = ({sites}) => {
 
@@ -7,59 +8,64 @@ const SiteList = ({sites}) => {
         const requestOptions = {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({key: site.key})
+            body: JSON.stringify({id: site.id})
         };
         fetch('/api/sites/remove', requestOptions);
     }
 
-    const addSite = () => {
-        const requestOptions = {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                name: document.querySelector('.site-name input').value,
-                url: document.querySelector('.site-url input').value,
-                weight: document.querySelector('.site-weight input').value
-            })
-        };
-        fetch('/api/sites/add', requestOptions);
-    }
+    // const addSite = () => {
+    //     const requestOptions = {
+    //         method: 'PUT',
+    //         headers: {'Content-Type': 'application/json'},
+    //         body: JSON.stringify({
+    //             name: document.querySelector('.site-name input').value,
+    //             url: document.querySelector('.site-url input').value,
+    //             weight: document.querySelector('.site-weight input').value
+    //         })
+    //     };
+    //     fetch('/api/sites/add', requestOptions);
+    // }
+
+    const SitesGridColumns = [{field: 'id', headerName: 'ID', flex: 1},
+        {field: 'name', headerName: 'Name', flex: 2},
+        {field: 'url', headerName: 'URL', flex: 2},
+        {field: 'weight', headerName: 'Weight', flex: 1},
+        {
+            field: "action",
+            headerName: "Action",
+            sortable: false,
+            flex: 1,
+            renderCell: (params) => {
+                const onClick = (e) => {
+                    e.stopPropagation(); // don't select this row after clicking
+
+                    const api = params.api;
+                    const thisRow = {};
+
+                    api
+                        .getAllColumns()
+                        .filter((c) => c.field !== "__check__" && !!c)
+                        .forEach(
+                            (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
+                        );
+
+                    removeSite(thisRow);
+                };
+
+                return (
+                    <div className='h-full w-full flex justify-center items-center'>
+                        <Button variant='contained' size='medium' startIcon={<DeleteIcon/>} color='error'
+                                onClick={onClick} className='h-3/4 w-3/4 -translate-y-0.5'>Remove</Button>
+                    </div>
+                );
+            }
+        },
+    ]
 
     return (
-        <div className="site-list">
-            {sites.length > 0 ?
-                <table className='table-auto h-1 overflow-clip'>
-                    <thead>
-                    <tr>
-                        <th className='w-60'>Name</th>
-                        <th className='w-60 overflow-clip h-1'>URL</th>
-                        <th className='w-20'>Weight</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {sites.map(site =>
-                        <Site key={site.key} site={site} onRemove={removeSite}/>
-                    )}
-                    <tr
-                        className="site place-items-center border border-8">
-                        <td className="site-name">
-                            <input type='text' placeholder='Site Name'/>
-                        </td>
-                        <td className="site-url border">
-                            <input type='text' placeholder='Site URL'/>
-                        </td>
-                        <td className="site-weight h-auto w-auto p-2 m-2">
-                            <input type='number' placeholder='Weight' min='0' max='100'/>
-                        </td>
-                        <td className="site-remove-button border-l hover:bg-gray-300">
-                            <Button onClick={() => addSite()} text='Add' color='green'
-                                    className='h-auto m-2 w-full p-2 rounded shadow text-white'/>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                : 'No clients yet'}
-        </div>
+        <DataGrid rows={sites}
+                  columns={SitesGridColumns} checkboxSelection
+                  disableColumnSelector disableSelectionOnClick/>
     );
 }
 

@@ -9,7 +9,7 @@ const ClientList = ({clients}) => {
         const requestOptions = {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({key: client.key})
+            body: JSON.stringify({id: client.id})
         };
         fetch('/api/clients/remove', requestOptions);
     };
@@ -39,8 +39,6 @@ const ClientList = ({clients}) => {
                         );
 
                     removeClient(thisRow);
-
-                    // return alert(JSON.stringify(thisRow, null, 4));
                 };
 
                 return (

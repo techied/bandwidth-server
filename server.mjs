@@ -26,17 +26,17 @@ let clients = [{
 }];
 
 let sites = [{
-    key: 1,
+    id: 1,
     name: 'YouTube',
     url: 'https://youtube.com',
     weight: 100
 }, {
-    key: 2,
+    id: 2,
     name: 'Amazon',
     url: 'https://amazon.com',
     weight: 100
 }, {
-    key: 3,
+    id: 3,
     name: 'Google',
     url: 'https://google.com',
     weight: 100
@@ -62,9 +62,9 @@ app.delete('/api/clients/remove', jsonParser, (req, res) => {
 });
 
 app.delete('/api/sites/remove', jsonParser, (req, res) => {
-    const key = req.body.key;
-    sites = sites.filter(site => site.key !== key);
-    io.emit('site remove', key);
+    const id = req.body.id;
+    sites = sites.filter(site => site.id !== id);
+    io.emit('site remove', id);
     res.sendStatus(200);
 });
 
