@@ -1,6 +1,7 @@
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 import {DataGrid} from "@mui/x-data-grid";
-import {Button} from "@mui/material";
+import {Button, Fab} from "@mui/material";
 
 const SiteList = ({sites}) => {
 
@@ -63,9 +64,17 @@ const SiteList = ({sites}) => {
     ]
 
     return (
-        <DataGrid rows={sites}
-                  columns={SitesGridColumns} checkboxSelection
-                  disableColumnSelector disableSelectionOnClick/>
+        <>
+            <DataGrid rows={sites}
+                      columns={SitesGridColumns} checkboxSelection
+                      disableColumnSelector disableSelectionOnClick/>
+            <Fab color='primary' aria-label='add' className='fixed bottom-0 right-0 m-4'
+                 onClick={() => {
+                     // addSite();
+                 }}>
+                <AddIcon/>
+            </Fab>
+        </>
     );
 }
 
