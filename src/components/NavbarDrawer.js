@@ -15,7 +15,7 @@ const NavbarDrawer = ({open, setOpen}) => {
                 boxSizing: 'border-box',
             },
         }}>
-            <Typography variant='h6' className='flex justify-center'>
+            <Typography variant='h6' className='center'>
                 Navigation
             </Typography>
             <List>

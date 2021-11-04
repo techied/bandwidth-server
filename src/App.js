@@ -54,10 +54,10 @@ const App = () => {
     return (
         <div className="App">
             <BrowserRouter>
-                <div className='flex justify-center'>
+                <div className='nav center'>
                     <Navbar/>
                 </div>
-                <div className='flex justify-center h-screen'>
+                <div className='main center'>
                     <Switch>
                         <Route path="/" exact
                                component={() => <ClientList clients={clients}/>}/>

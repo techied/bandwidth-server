@@ -42,9 +42,9 @@ const ClientList = ({clients}) => {
                 };
 
                 return (
-                    <div className='h-full w-full flex justify-center items-center'>
+                    <div className='list center'>
                         <Button variant='contained' size='medium' startIcon={<DeleteIcon/>} color='error'
-                                onClick={onClick} className='h-3/4 w-3/4 -translate-y-0.5'>Remove</Button>
+                                onClick={onClick} className='remove-btn'>Remove</Button>
                     </div>
                 );
             }

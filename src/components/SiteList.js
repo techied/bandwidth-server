@@ -54,9 +54,9 @@ const SiteList = ({sites}) => {
                 };
 
                 return (
-                    <div className='h-full w-full flex justify-center items-center'>
+                    <div className='list center'>
                         <Button variant='contained' size='medium' startIcon={<DeleteIcon/>} color='error'
-                                onClick={onClick} className='h-3/4 w-3/4 -translate-y-0.5'>Remove</Button>
+                                onClick={onClick} className='remove-btn'>Remove</Button>
                     </div>
                 );
             }
@@ -68,7 +68,7 @@ const SiteList = ({sites}) => {
             <DataGrid rows={sites}
                       columns={SitesGridColumns} checkboxSelection
                       disableColumnSelector disableSelectionOnClick/>
-            <Fab color='primary' aria-label='add' className='fixed bottom-0 right-0 m-4'
+            <Fab color='primary' aria-label='add'
                  onClick={() => {
                      // addSite();
                  }}>
