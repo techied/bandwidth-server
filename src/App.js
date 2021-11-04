@@ -4,9 +4,7 @@ import {useEffect, useState} from "react";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SiteList from "./components/SiteList";
-import {Button} from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import {DataGrid} from "@mui/x-data-grid";
+import ClientList from "./components/ClientList";
 
 const socket = io();
 socket.on('connect', function () {
@@ -53,53 +51,6 @@ const App = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const ClientsGridColumns = [{field: 'id', headerName: 'ID', flex: 1},
-        {field: 'name', headerName: 'Name', flex: 2},
-        {field: 'ip', headerName: 'IP', flex: 2},
-        {field: 'status', headerName: 'Status', flex: 1},
-        {
-            field: "action",
-            headerName: "Action",
-            sortable: false,
-            flex: 1,
-            renderCell: (params) => {
-                const onClick = (e) => {
-                    e.stopPropagation(); // don't select this row after clicking
-
-                    const api = params.api;
-                    const thisRow = {};
-
-                    api
-                        .getAllColumns()
-                        .filter((c) => c.field !== "__check__" && !!c)
-                        .forEach(
-                            (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
-                        );
-
-                    const removeClient = (client) => {
-                        const requestOptions = {
-                            method: 'DELETE',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({id: client.id})
-                        };
-                        fetch('/api/clients/remove', requestOptions);
-                    };
-
-                    removeClient(thisRow);
-
-                    // return alert(JSON.stringify(thisRow, null, 4));
-                };
-
-                return (
-                    <div className='h-full w-full flex justify-center items-center'>
-                        <Button variant='contained' size='medium' startIcon={<DeleteIcon/>} color='error'
-                                onClick={onClick} className='h-3/4 w-3/4 -translate-y-0.5'>Remove</Button>
-                    </div>
-                );
-            }
-        },
-    ]
-//TODO: use DataGrid for clients instead of ClientList (Or impl DataGrid in ClientList? Yea probably do that)
     return (
         <div className="App">
             <BrowserRouter>
@@ -109,9 +60,7 @@ const App = () => {
                 <div className='flex justify-center h-screen'>
                     <Switch>
                         <Route path="/" exact
-                               component={() => <DataGrid rows={clients}
-                                                          columns={ClientsGridColumns} checkboxSelection
-                                                          disableColumnSelector disableSelectionOnClick/>}/>
+                               component={() => <ClientList clients={clients}/>}/>
                         <Route path="/sites" exact component={() => <SiteList sites={sites}/>}/>
                     </Switch>
                 </div>
