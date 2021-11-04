@@ -8,7 +8,8 @@ const Navbar = () => {
                 <NavButton to='/sites' text='Site List'/>
             </ul>
         </div>
-    );
+    )
+
 }
 
 export default Navbar;

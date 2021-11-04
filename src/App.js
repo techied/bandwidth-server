@@ -1,10 +1,10 @@
 import './App.css';
 import io from 'socket.io-client';
 import {useEffect, useState} from "react";
-import ClientList from "./components/ClientList";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SiteList from "./components/SiteList";
+import ClientList from "./components/ClientList";
 
 const socket = io();
 socket.on('connect', function () {
@@ -51,6 +51,8 @@ const App = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const ClientsGridColumns = [{field: 'col1', headerName: 'Column 1', width: 150}]
+//TODO: use DataGrid for clients instead of ClientList (Or impl DataGrid in ClientList? Yea probably do that)
     return (
         <div className="App">
             <BrowserRouter>
@@ -60,13 +62,15 @@ const App = () => {
                 <div className='flex justify-center'>
                     <Switch>
                         <Route path="/" exact
-                               component={() => <ClientList clients={clients}/>}/>
+                               component={() => <ClientList clients={clients}/>} /*<DataGrid rows={clients}
+                                                                                               columns={ClientsGridColumns}/>*//>
                         <Route path="/sites" exact component={() => <SiteList sites={sites}/>}/>
                     </Switch>
                 </div>
             </BrowserRouter>
         </div>
-    );
+    )
+
 };
 
 export default App;

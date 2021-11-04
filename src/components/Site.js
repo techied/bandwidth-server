@@ -3,7 +3,7 @@ import Button from "./Button";
 const Site = ({site, onRemove}) => {
     return (
         <tr
-            className="site place-items-center border border-8">
+            className="site place-items-center border border-8 h-1">
             <td className="site-name">
                 {site.name}
             </td>
