@@ -41,7 +41,7 @@ const AddSiteDialog = () => {
             })
         };
         fetch('/api/sites/add', requestOptions).then(() => {
-                // setBackdropOpen(false)
+                setBackdropOpen(false)
                 setOpen(false)
             }
         );
