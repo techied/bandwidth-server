@@ -68,7 +68,11 @@ const AddSiteDialog = () => {
                             <TextField margin="dense" id="weight" label='Weight' type='number' variant='standard'/>
                         </Grid>
                     </Grid>
-                    <TextField autoFocus margin="dense" id="url" label='URL' type='url' fullWidth variant='standard'/>
+                    <TextField autoFocus margin="dense" id="url" label='URL' type='url' onKeyUp={(key) => {
+                        if (key.key === 'Enter') {
+                            addSite();
+                        }
+                    }} fullWidth variant='standard'/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpen(false)} color="primary">Cancel</Button>
