@@ -50,7 +50,7 @@ const App = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    //TODO: Remove TailwindCSS since it doesn't play nice with MUI
+
     return (
         <div className="App">
             <BrowserRouter>
