@@ -22,10 +22,11 @@ code {
 }
 
 .nav {
+    height: 6.5vh;
 }
 
 .main {
-    height: 100vh;
+    height: 93.5vh;
 }
 
 .list {

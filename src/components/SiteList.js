@@ -40,9 +40,14 @@ const SiteList = ({sites}) => {
                     removeSite(thisRow);
                 };
 
+                const buttonStyle = {
+                    borderRadius: 4
+                }
+
                 return (
                     <div className='list center'>
-                        <Button variant='contained' size='medium' startIcon={<DeleteIcon/>} color='error'
+                        <Button variant='contained' style={buttonStyle} size='medium' startIcon={<DeleteIcon/>}
+                                color='error'
                                 onClick={onClick} className='remove-btn'>Remove</Button>
                     </div>
                 );

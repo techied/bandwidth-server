@@ -33,9 +33,9 @@ const App = () => {
             setClients(clients => [...clients, data]);
         });
 
-        socket.on('client remove', function (key) {
-            console.log('client remove ' + key);
-            setClients(clients => clients.filter(client => client.key !== key));
+        socket.on('client remove', function (id) {
+            console.log('client remove ' + id);
+            setClients(clients => clients.filter(client => client.id !== id));
         });
 
         socket.on('site add', function (data) {
@@ -43,9 +43,9 @@ const App = () => {
             setSites(sites => [...sites, data]);
         });
 
-        socket.on('site remove', function (key) {
-            console.log('site remove ' + key);
-            setSites(sites => sites.filter(site => site.key !== key));
+        socket.on('site remove', function (id) {
+            console.log('site remove ' + id);
+            setSites(sites => sites.filter(site => site.id !== id));
         });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
