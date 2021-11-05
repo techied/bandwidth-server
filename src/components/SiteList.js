@@ -1,7 +1,7 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 import {DataGrid} from "@mui/x-data-grid";
-import {Button, Fab} from "@mui/material";
+import {Button} from "@mui/material";
+import AddSiteDialog from "./AddSiteDialog";
 
 const SiteList = ({sites}) => {
 
@@ -13,19 +13,6 @@ const SiteList = ({sites}) => {
         };
         fetch('/api/sites/remove', requestOptions);
     }
-
-    // const addSite = () => {
-    //     const requestOptions = {
-    //         method: 'PUT',
-    //         headers: {'Content-Type': 'application/json'},
-    //         body: JSON.stringify({
-    //             name: document.querySelector('.site-name input').value,
-    //             url: document.querySelector('.site-url input').value,
-    //             weight: document.querySelector('.site-weight input').value
-    //         })
-    //     };
-    //     fetch('/api/sites/add', requestOptions);
-    // }
 
     const SitesGridColumns = [{field: 'id', headerName: 'ID', flex: 1},
         {field: 'name', headerName: 'Name', flex: 2},
@@ -68,12 +55,8 @@ const SiteList = ({sites}) => {
             <DataGrid rows={sites}
                       columns={SitesGridColumns} checkboxSelection
                       disableColumnSelector disableSelectionOnClick/>
-            <Fab color='primary' aria-label='add'
-                 onClick={() => {
-                     // addSite();
-                 }}>
-                <AddIcon/>
-            </Fab>
+
+            <AddSiteDialog/>
         </>
     );
 }

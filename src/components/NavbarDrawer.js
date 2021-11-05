@@ -22,7 +22,6 @@ const NavbarDrawer = ({open, setOpen}) => {
                 <NavButton to='/' setOpen={setOpen} text={'Home'} icon={<HomeIcon/>}/>
                 <NavButton to='/sites' setOpen={setOpen} text={'Sites'} icon={<GlobeIcon/>}/>
             </List>
-
         </SwipeableDrawer>
     )
 }

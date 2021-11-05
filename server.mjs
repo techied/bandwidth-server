@@ -70,6 +70,8 @@ app.delete('/api/sites/remove', jsonParser, (req, res) => {
 
 app.put('/api/sites/add', jsonParser, (req, res) => {
     const site = req.body;
+    // set id to random number
+    site.id = Math.floor(Math.random() * 100);
     sites.push(site);
     io.emit('site add', site);
     res.sendStatus(200);
