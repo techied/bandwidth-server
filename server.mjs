@@ -1,12 +1,32 @@
 import express from 'express';
 import {Server} from 'socket.io';
 import bodyParser from "body-parser";
+import {MongoClient, ObjectId} from 'mongodb';
+import dotenv from 'dotenv';
+import compression from "compression";
+import * as path from "path";
+
+dotenv.config();
 
 const app = express();
+
+app.use(compression());
+
 // Serve static files from the React app
 app.use(express.static('./build'));
 
 const jsonParser = bodyParser.json();
+
+// get mongoUri from env
+const uri = process.env.MONGODB_URI;
+
+const mongoOptions = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+};
+
+const mongoClient = new MongoClient(uri, mongoOptions);
+
 
 let clients = [{
     id: 1,
@@ -25,22 +45,13 @@ let clients = [{
     status: 'offline'
 }];
 
-let sites = [{
-    id: 1,
-    name: 'YouTube',
-    url: 'https://youtube.com',
-    weight: 100
-}, {
-    id: 2,
-    name: 'Amazon',
-    url: 'https://amazon.com',
-    weight: 100
-}, {
-    id: 3,
-    name: 'Google',
-    url: 'https://google.com',
-    weight: 100
-}]
+mongoClient.connect(err => {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
+    console.log('Connected to MongoDB');
+});
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -51,7 +62,15 @@ app.get('/api/clients', (req, res) => {
 });
 
 app.get('/api/sites', (req, res) => {
-    res.json(sites);
+    mongoClient.db('main').collection('sites').find().toArray((err, result) => {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        const sites = result;
+        res.json(sites);
+        console.log('Sites loaded', sites);
+    });
 });
 
 app.delete('/api/clients/remove', jsonParser, (req, res) => {
@@ -62,19 +81,29 @@ app.delete('/api/clients/remove', jsonParser, (req, res) => {
 });
 
 app.delete('/api/sites/remove', jsonParser, (req, res) => {
-    const id = req.body.id;
-    sites = sites.filter(site => site.id !== id);
-    io.emit('site remove', id);
+    const id = req.body._id;
+    mongoClient.db('main').collection('sites').deleteOne({_id: new ObjectId(id)}, (err, result) => {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        console.log('Site removed from db', result);
+        io.emit('site remove', id);
+    });
     res.sendStatus(200);
 });
 
 app.put('/api/sites/add', jsonParser, (req, res) => {
-    const site = req.body;
-    // set id to random number
-    site.id = Math.floor(Math.random() * 100);
-    sites.push(site);
-    io.emit('site add', site);
-    res.sendStatus(200);
+    let site = req.body;
+    mongoClient.db('main').collection('sites').insertOne(site, (err, result) => {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        site._id = result.insertedId;
+        io.emit('site add', site);
+        res.sendStatus(200);
+    });
 });
 
 app.put('/api/clients/add', jsonParser, (req, res) => {
@@ -83,6 +112,10 @@ app.put('/api/clients/add', jsonParser, (req, res) => {
     clients.push(client);
     io.emit('client add', client);
     res.sendStatus(200);
+});
+
+app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(path.resolve(), '/build/index.html'))
 });
 
 const server = app.listen(3001, () => {

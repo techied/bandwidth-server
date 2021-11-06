@@ -9,14 +9,14 @@ const SiteList = ({sites}) => {
         const requestOptions = {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id: site.id})
+            body: JSON.stringify({_id: site._id})
         };
         fetch('/api/sites/remove', requestOptions);
     }
 
-    const SitesGridColumns = [{field: 'id', headerName: 'ID', flex: 1},
+    const SitesGridColumns = [{field: '_id', headerName: 'ID', flex: 1.5},
         {field: 'name', headerName: 'Name', flex: 2},
-        {field: 'url', headerName: 'URL', flex: 2},
+        {field: 'url', headerName: 'URL', flex: 3},
         {field: 'weight', headerName: 'Weight', flex: 1},
         {
             field: "action",
@@ -59,7 +59,7 @@ const SiteList = ({sites}) => {
         <>
             <DataGrid rows={sites}
                       columns={SitesGridColumns} checkboxSelection
-                      disableColumnSelector disableSelectionOnClick/>
+                      disableColumnSelector disableSelectionOnClick getRowId={(r) => r._id}/>
 
             <AddSiteDialog/>
         </>

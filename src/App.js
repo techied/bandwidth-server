@@ -45,7 +45,7 @@ const App = () => {
 
         socket.on('site remove', function (id) {
             console.log('site remove ' + id);
-            setSites(sites => sites.filter(site => site.id !== id));
+            setSites(sites => sites.filter(site => site._id !== id));
         });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
