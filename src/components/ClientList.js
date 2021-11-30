@@ -31,6 +31,9 @@ const ClientList = ({clients}) => {
                     .forEach(
                         (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
                     );
+                if (thisRow['lastSeen'] === null) {
+                    return 'Never';
+                }
                 return (<ReactTimeAgo date={thisRow['lastSeen']} locale="en-US"/>)
             }
         },
