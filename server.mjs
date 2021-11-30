@@ -136,16 +136,16 @@ const server = app.listen(3001, () => {
 const io = new Server(server);
 io.on('connection', Socket => {
     Socket.on('disconnect', () => {
-        socketClients.forEach((mac, socketId) => {
+        socketClients.forEach((socketId, mac) => {
             if (socketId === Socket.id) {
                 socketClients.delete(mac);
                 console.log('Client disconnected', mac);
-                mongoClient.db('main').collection('clients').updateOne({mac: mac}, {$set: {lastSeen: Date()}}, (err, result) => {
+                mongoClient.db('main').collection('clients').findOneAndUpdate({mac: mac}, {$set: {lastSeen: new Date(new Date().toISOString())}}, (err, result) => {
                     if (err) {
                         console.error(err);
                         process.exit(1);
                     }
-                    console.log('Client disconnected from db', result);
+                    console.log('Client updated', result);
                 });
             }
         });

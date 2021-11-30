@@ -1,5 +1,6 @@
 import {Button} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {DataGrid} from "@mui/x-data-grid";
 import ReactTimeAgo from "react-time-ago";
 
@@ -19,7 +20,12 @@ const ClientList = ({clients}) => {
     const ClientsGridColumns = [{field: '_id', headerName: 'ID', flex: 1.5},
         {field: 'name', headerName: 'Name', flex: 2},
         {field: 'mac', headerName: 'MAC Address', flex: 2},
-        {field: 'connected', headerName: 'Connected', flex: 1},
+        {
+            field: 'connected', headerName: 'Connected', flex: 1, renderCell: (params) => {
+                console.log(params);
+                return params.row.connected ? <CheckCircleIcon/> : '';
+            }
+        },
         {
             field: 'lastSeen', headerName: 'Last Seen', flex: 1, renderCell: (params) => {
                 const api = params.api;
@@ -31,10 +37,15 @@ const ClientList = ({clients}) => {
                     .forEach(
                         (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
                     );
-                if (thisRow['lastSeen'] === null) {
-                    return 'Never';
+                let val;
+                if (params.row.connected) {
+                    val = 'Just now';
+                } else if (thisRow['lastSeen'] === undefined) {
+                    val = 'Never';
+                } else {
+                    val = <ReactTimeAgo date={thisRow['lastSeen']} locale="en-US"/>;
                 }
-                return (<ReactTimeAgo date={thisRow['lastSeen']} locale="en-US"/>)
+                return val;
             }
         },
         {

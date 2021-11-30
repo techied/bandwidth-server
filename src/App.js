@@ -33,6 +33,12 @@ const App = () => {
             setClients(clients => [...clients, data]);
         });
 
+        socket.on('client update', function (data) {
+            console.log('client update ' + data);
+            setClients(clients => clients.map(client => client.id === data.id ? data : client));
+        });
+
+
         socket.on('client remove', function (id) {
             console.log('client remove ' + id);
             setClients(clients => clients.filter(client => client.id !== id));
