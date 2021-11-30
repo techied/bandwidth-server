@@ -10,6 +10,7 @@ dotenv.config();
 
 const app = express();
 
+// noinspection JSCheckFunctionSignatures
 app.use(compression());
 
 // Serve static files from the React app
@@ -20,30 +21,13 @@ const jsonParser = bodyParser.json();
 // get mongoUri from env
 const uri = process.env.MONGODB_URI;
 
-const mongoOptions = {
+const socketClients = new Map();
+
+// noinspection JSCheckFunctionSignatures
+const mongoClient = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-};
-
-const mongoClient = new MongoClient(uri, mongoOptions);
-
-
-let clients = [{
-    id: 1,
-    name: 'John Doe',
-    ip: '127.0.0.1',
-    status: 'online'
-}, {
-    id: 2,
-    name: 'Jane Doe',
-    ip: '129.0.0.6',
-    status: 'online'
-}, {
-    id: 3,
-    name: 'Jimmy John',
-    ip: '129.0.0.7',
-    status: 'offline'
-}];
+});
 
 mongoClient.connect(err => {
     if (err) {
@@ -58,7 +42,23 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/clients', (req, res) => {
-    res.json(clients);
+    mongoClient.db('main').collection('clients').find().toArray((err, result) => {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        let clients = result;
+        clients.forEach(client => {
+            client.connected = socketClients.has(client.mac);
+        });
+        res.json(clients);
+        console.log('Clients loaded', clients);
+    });
+});
+
+app.get('/run/iperf3', (req, res) => {
+    io.emit('iperf3', req);
+    res.sendStatus(200);
 });
 
 app.get('/api/sites', (req, res) => {
@@ -74,9 +74,15 @@ app.get('/api/sites', (req, res) => {
 });
 
 app.delete('/api/clients/remove', jsonParser, (req, res) => {
-    const id = req.body.id;
-    clients = clients.filter(client => client.id !== id);
-    io.emit('client remove', id);
+    const id = req.body._id;
+    mongoClient.db('main').collection('clients').deleteOne({_id: new ObjectId(id)}, (err, result) => {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        console.log('Client removed from db', result);
+        io.emit('client remove', id);
+    });
     res.sendStatus(200);
 });
 
@@ -94,7 +100,7 @@ app.delete('/api/sites/remove', jsonParser, (req, res) => {
 });
 
 app.put('/api/sites/add', jsonParser, (req, res) => {
-    let site = req.body;
+    const site = req.body;
     mongoClient.db('main').collection('sites').insertOne(site, (err, result) => {
         if (err) {
             console.error(err);
@@ -108,10 +114,15 @@ app.put('/api/sites/add', jsonParser, (req, res) => {
 
 app.put('/api/clients/add', jsonParser, (req, res) => {
     const client = req.body;
-    console.log(req.body);
-    clients.push(client);
-    io.emit('client add', client);
-    res.sendStatus(200);
+    mongoClient.db('main').collection('clients').insertOne(client, (err, result) => {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        client._id = result.insertedId;
+        io.emit('client add', client);
+        res.sendStatus(200);
+    });
 });
 
 app.get(/.*/, (req, res) => {
@@ -124,12 +135,35 @@ const server = app.listen(3001, () => {
 
 const io = new Server(server);
 io.on('connection', Socket => {
-    console.log('New client connected');
     Socket.on('disconnect', () => {
+        socketClients.forEach((mac, socketId) => {
+            if (socketId === Socket.id) {
+                socketClients.delete(mac);
+                console.log('Client disconnected', mac);
+                mongoClient.db('main').collection('clients').updateOne({mac: mac}, {$set: {lastSeen: Date()}}, (err, result) => {
+                    if (err) {
+                        console.error(err);
+                        process.exit(1);
+                    }
+                    console.log('Client disconnected from db', result);
+                });
+            }
+        });
         console.log('Client disconnected');
     });
     Socket.on('chat message', msg => {
         console.log('Message: ' + msg);
         io.emit('chat message', msg);
+    });
+    Socket.on('client mac', mac => {
+        mongoClient.db('main').collection('clients').findOne({mac: mac}).then(result => {
+            if (result) {
+                socketClients.set(mac, Socket.id);
+                console.log('Client connected', mac, Socket.id);
+            } else {
+                console.log('Client invalid');
+                Socket.disconnect();
+            }
+        });
     });
 });

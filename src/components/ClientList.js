@@ -1,6 +1,7 @@
 import {Button} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {DataGrid} from "@mui/x-data-grid";
+import ReactTimeAgo from "react-time-ago";
 
 const ClientList = ({clients}) => {
 
@@ -9,16 +10,30 @@ const ClientList = ({clients}) => {
         const requestOptions = {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id: client.id})
+            body: JSON.stringify({_id: client._id})
         };
         fetch('/api/clients/remove', requestOptions);
     };
 
 
-    const ClientsGridColumns = [{field: 'id', headerName: 'ID', flex: 1},
+    const ClientsGridColumns = [{field: '_id', headerName: 'ID', flex: 1.5},
         {field: 'name', headerName: 'Name', flex: 2},
-        {field: 'ip', headerName: 'IP', flex: 2},
-        {field: 'status', headerName: 'Status', flex: 1},
+        {field: 'mac', headerName: 'MAC Address', flex: 2},
+        {field: 'connected', headerName: 'Connected', flex: 1},
+        {
+            field: 'lastSeen', headerName: 'Last Seen', flex: 1, renderCell: (params) => {
+                const api = params.api;
+                const thisRow = {};
+
+                api
+                    .getAllColumns()
+                    .filter((c) => c.field !== "__check__" && !!c)
+                    .forEach(
+                        (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
+                    );
+                return (<ReactTimeAgo date={thisRow['lastSeen']} locale="en-US"/>)
+            }
+        },
         {
             field: "action",
             headerName: "Action",
@@ -59,7 +74,7 @@ const ClientList = ({clients}) => {
     return (
         <DataGrid rows={clients}
                   columns={ClientsGridColumns} checkboxSelection
-                  disableColumnSelector disableSelectionOnClick/>
+                  disableColumnSelector disableSelectionOnClick getRowId={(r) => r._id}/>
     )
 }
 

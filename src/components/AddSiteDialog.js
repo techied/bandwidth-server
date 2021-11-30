@@ -28,8 +28,6 @@ const AddSiteDialog = () => {
     }
 
     const addSite = () => {
-
-
         setBackdropOpen(true);
         const requestOptions = {
             method: 'PUT',
