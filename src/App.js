@@ -1,15 +1,11 @@
 import './App.css';
-import io from 'socket.io-client';
 import {useEffect, useState} from "react";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SiteList from "./components/SiteList";
 import ClientList from "./components/ClientList";
+import socket from "./SocketConfig";
 
-const socket = io();
-socket.on('connect', function () {
-    console.log('socket connected');
-});
 
 const App = () => {
 

@@ -56,8 +56,8 @@ app.get('/api/clients', (req, res) => {
     });
 });
 
-app.get('/run/iperf3', (req, res) => {
-    io.emit('iperf3', req);
+app.post('/run/iperf3', jsonParser, (req, res) => {
+    io.emit('iperf3', req.body);
     res.sendStatus(200);
 });
 
@@ -80,7 +80,6 @@ app.delete('/api/clients/remove', jsonParser, (req, res) => {
             console.error(err);
             process.exit(1);
         }
-        console.log('Client removed from db', result);
         io.emit('client remove', id);
     });
     res.sendStatus(200);
@@ -93,7 +92,6 @@ app.delete('/api/sites/remove', jsonParser, (req, res) => {
             console.error(err);
             process.exit(1);
         }
-        console.log('Site removed from db', result);
         io.emit('site remove', id);
     });
     res.sendStatus(200);
@@ -145,15 +143,10 @@ io.on('connection', Socket => {
                         console.error(err);
                         process.exit(1);
                     }
-                    console.log('Client updated', result);
                 });
             }
         });
         console.log('Client disconnected');
-    });
-    Socket.on('chat message', msg => {
-        console.log('Message: ' + msg);
-        io.emit('chat message', msg);
     });
     Socket.on('client mac', mac => {
         mongoClient.db('main').collection('clients').findOne({mac: mac}).then(result => {
@@ -163,6 +156,17 @@ io.on('connection', Socket => {
             } else {
                 console.log('Client invalid');
                 Socket.disconnect();
+            }
+        });
+    });
+    Socket.on('iperf3 results', results => {
+        results.timestamp = new Date(new Date().toISOString());
+        console.log(results)
+
+        mongoClient.db('main').collection('iperf3').insertOne(results, (err, result) => {
+            if (err) {
+                console.error(err);
+                process.exit(1);
             }
         });
     });
