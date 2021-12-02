@@ -5,6 +5,7 @@ import {DataGrid} from "@mui/x-data-grid";
 import ReactTimeAgo from "react-time-ago";
 import {useState} from "react";
 import AddClientDialog from "./AddClientDialog";
+import LastTestResult from "./LastTestResult";
 
 const ClientList = ({clients}) => {
 
@@ -26,6 +27,10 @@ const ClientList = ({clients}) => {
         headerName: 'Name',
         flex: 2
     }, {field: 'mac', headerName: 'MAC Address', flex: 2}, {
+        field: 'lastTest', headerName: 'Last Test Result', flex: 2, renderCell: (params) => {
+            return <LastTestResult lastTest={params.row.lastTest}/>
+        }
+    }, {
         field: 'connected', headerName: 'Connected', flex: 1, renderCell: (params) => {
             return params.row.connected ? <CheckCircleIcon/> : '';
         }
@@ -52,17 +57,6 @@ const ClientList = ({clients}) => {
         field: "action", headerName: "Action", sortable: false, flex: 1, renderCell: (params) => {
             const onClick = (e) => {
                 e.stopPropagation(); // don't select this row after clicking
-
-                // const api = params.api;
-                // const thisRow = {};
-                //
-                // api
-                //     .getAllColumns()
-                //     .filter((c) => c.field !== "__check__" && !!c)
-                //     .forEach(
-                //         (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
-                //     );
-
                 iperf3(params.row);
             };
 
@@ -73,7 +67,7 @@ const ClientList = ({clients}) => {
             return (<div className='list center'>
                 <Button variant='contained' size='medium' style={buttonStyle} startIcon={<DeleteIcon/>}
                         color='error'
-                        onClick={onClick} className='remove-btn'>Remove</Button>
+                        onClick={onClick} className='remove-btn'>Run Test</Button>
             </div>);
         }
     },]

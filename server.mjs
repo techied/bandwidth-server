@@ -37,20 +37,26 @@ mongoClient.connect(err => {
     console.log('Connected to MongoDB');
 });
 
+
+const db = mongoClient.db('main');
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-app.get('/api/clients', (req, res) => {
-    mongoClient.db('main').collection('clients').find().toArray((err, result) => {
+app.get('/api/clients', async (req, res) => {
+    db.collection('clients').find().toArray(async (err, result) => {
         if (err) {
             console.error(err);
             process.exit(1);
         }
         let clients = result;
-        clients.forEach(client => {
+        for (const client of clients) {
             client.connected = socketClients.has(client.mac);
-        });
+            client.lastTest = await db.collection('iperf3').findOne({mac: client.mac}, {sort: {timestamp: -1}}).then(result => {
+                return result;
+            });
+        }
         res.json(clients);
         console.log('Clients loaded', clients);
     });
@@ -62,7 +68,7 @@ app.post('/run/iperf3', jsonParser, (req, res) => {
 });
 
 app.get('/api/sites', (req, res) => {
-    mongoClient.db('main').collection('sites').find().toArray((err, result) => {
+    db.collection('sites').find().toArray((err, result) => {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -75,7 +81,7 @@ app.get('/api/sites', (req, res) => {
 
 app.delete('/api/clients/remove', jsonParser, (req, res) => {
     const id = req.body._id;
-    mongoClient.db('main').collection('clients').deleteOne({_id: new ObjectId(id)}, (err, result) => {
+    db.collection('clients').deleteOne({_id: new ObjectId(id)}, (err, result) => {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -87,7 +93,7 @@ app.delete('/api/clients/remove', jsonParser, (req, res) => {
 
 app.delete('/api/sites/remove', jsonParser, (req, res) => {
     const id = req.body._id;
-    mongoClient.db('main').collection('sites').deleteOne({_id: new ObjectId(id)}, (err, result) => {
+    db.collection('sites').deleteOne({_id: new ObjectId(id)}, (err, result) => {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -99,7 +105,7 @@ app.delete('/api/sites/remove', jsonParser, (req, res) => {
 
 app.put('/api/sites/add', jsonParser, (req, res) => {
     const site = req.body;
-    mongoClient.db('main').collection('sites').insertOne(site, (err, result) => {
+    db.collection('sites').insertOne(site, (err, result) => {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -112,7 +118,7 @@ app.put('/api/sites/add', jsonParser, (req, res) => {
 
 app.put('/api/clients/add', jsonParser, (req, res) => {
     const client = req.body;
-    mongoClient.db('main').collection('clients').insertOne(client, (err, result) => {
+    db.collection('clients').insertOne(client, (err, result) => {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -138,7 +144,7 @@ io.on('connection', Socket => {
             if (socketId === Socket.id) {
                 socketClients.delete(mac);
                 console.log('Client disconnected', mac);
-                mongoClient.db('main').collection('clients').findOneAndUpdate({mac: mac}, {$set: {lastSeen: new Date(new Date().toISOString())}}, (err, result) => {
+                db.collection('clients').findOneAndUpdate({mac: mac}, {$set: {lastSeen: new Date(new Date().toISOString())}}, (err, result) => {
                     if (err) {
                         console.error(err);
                         process.exit(1);
@@ -149,7 +155,7 @@ io.on('connection', Socket => {
         console.log('Client disconnected');
     });
     Socket.on('client mac', mac => {
-        mongoClient.db('main').collection('clients').findOne({mac: mac}).then(result => {
+        db.collection('clients').findOne({mac: mac}).then(result => {
             if (result) {
                 socketClients.set(mac, Socket.id);
                 console.log('Client connected', mac, Socket.id);
@@ -161,9 +167,7 @@ io.on('connection', Socket => {
     });
     Socket.on('iperf3 results', results => {
         results.timestamp = new Date(new Date().toISOString());
-        console.log(results)
-
-        mongoClient.db('main').collection('iperf3').insertOne(results, (err, result) => {
+        db.collection('iperf3').insertOne(results, (err, result) => {
             if (err) {
                 console.error(err);
                 process.exit(1);
