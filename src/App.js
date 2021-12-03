@@ -10,7 +10,7 @@ import socket from "./SocketConfig";
 const App = () => {
 
     const [clients, setClients] = useState([]);
-
+    const [clientUpdate, setClientUpdate] = useState([]);
     const [sites, setSites] = useState([]);
 
     useEffect(() => {
@@ -19,56 +19,69 @@ const App = () => {
                 setClients(data);
             }
         });
+
         fetch('/api/sites').then(res => res.json()).then(data => {
             if (sites !== data) {
                 setSites(data);
             }
         });
+
         socket.on('client add', function (data) {
-            console.log('client add ' + data);
+            console.log('client add ', data);
             setClients(clients => [...clients, data]);
         });
 
         socket.on('client update', function (data) {
-            console.log('client update ' + data);
-            setClients(clients => clients.map(client => client.id === data.id ? data : client));
+            console.log('client update', data);
+            setClientUpdate(data)
         });
 
-
         socket.on('client remove', function (id) {
-            console.log('client remove ' + id);
+            console.log('client remove ', id);
             setClients(clients => clients.filter(client => client.id !== id));
         });
 
         socket.on('site add', function (data) {
-            console.log('site add ' + data);
+            console.log('site add ', data);
             setSites(sites => [...sites, data]);
         });
 
         socket.on('site remove', function (id) {
-            console.log('site remove ' + id);
+            console.log('site remove ', id);
             setSites(sites => sites.filter(site => site._id !== id));
         });
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return (
-        <div className="App">
-            <BrowserRouter>
-                <div className='nav center'>
-                    <Navbar/>
-                </div>
-                <div className='main center'>
-                    <Switch>
-                        <Route path="/" exact
-                               component={() => <ClientList clients={clients}/>}/>
-                        <Route path="/sites" exact component={() => <SiteList sites={sites}/>}/>
-                    </Switch>
-                </div>
-            </BrowserRouter>
-        </div>
-    )
+    useEffect(() => {
+        console.log(clients)
+        setClients(clients.map(client => {
+            if (clientUpdate._id === client._id) {
+                return clientUpdate
+            }
+            return client
+        }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [clientUpdate]);
+
+    useEffect(() => {
+        console.log(clients)
+    }, [clients])
+
+    return (<div className="App">
+        <BrowserRouter>
+            <div className='nav center'>
+                <Navbar/>
+            </div>
+            <div className='main center'>
+                <Switch>
+                    <Route path="/" exact
+                           component={() => <ClientList clients={clients}/>}/>
+                    <Route path="/sites" exact component={() => <SiteList sites={sites}/>}/>
+                </Switch>
+            </div>
+        </BrowserRouter>
+    </div>)
 
 };
 

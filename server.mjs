@@ -25,8 +25,7 @@ const socketClients = new Map();
 
 // noinspection JSCheckFunctionSignatures
 const mongoClient = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+    useNewUrlParser: true, useUnifiedTopology: true
 });
 
 mongoClient.connect(err => {
@@ -173,5 +172,17 @@ io.on('connection', Socket => {
                 process.exit(1);
             }
         });
+
+        // get mac for socket id from socketClients
+        socketClients.forEach((socketId, mac) => {
+            if (socketId === Socket.id) {
+                db.collection('clients').findOne({mac: mac}).then(result => {
+                    result.lastTest = results;
+                    result.connected = true;
+                    io.emit('client update', result);
+                });
+            }
+        });
+
     });
 });
