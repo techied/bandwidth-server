@@ -72,6 +72,7 @@ const getClient = async (mac) => {
         client.lastWebtest = await db.collection('webtest').findOne({mac: mac}, {sort: {timestamp: -1}}).then(result => {
             return result;
         });
+        client.connected = socketClients.has(client.mac);
         return client;
     });
 }
@@ -171,10 +172,11 @@ const server = app.listen(3001, () => {
 const io = new Server(server);
 io.on('connection', Socket => {
     Socket.on('disconnect', () => {
-        socketClients.forEach((socketId, mac) => {
+        socketClients.forEach(async (socketId, mac) => {
             if (socketId === Socket.id) {
                 socketClients.delete(mac);
                 console.log('Client disconnected', mac);
+                io.emit('client update', await getClient(mac))
                 db.collection('clients').findOneAndUpdate({mac: mac}, {$set: {lastSeen: new Date(new Date().toISOString())}}, (err) => {
                     if (err) {
                         console.error(err);
@@ -186,10 +188,11 @@ io.on('connection', Socket => {
         console.log('Client disconnected');
     });
     Socket.on('client mac', mac => {
-        db.collection('clients').findOne({mac: mac}).then(result => {
+        db.collection('clients').findOne({mac: mac}).then(async result => {
             if (result) {
                 socketClients.set(mac, Socket.id);
                 console.log('Client connected', mac, Socket.id);
+                io.emit('client update', await getClient(mac))
             } else {
                 console.log('Client invalid');
                 Socket.disconnect();

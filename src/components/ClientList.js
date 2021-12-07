@@ -1,5 +1,3 @@
-import {Button} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {DataGrid} from "@mui/x-data-grid";
 import ReactTimeAgo from "react-time-ago";
@@ -7,6 +5,8 @@ import {useState} from "react";
 import AddClientDialog from "./AddClientDialog";
 import LastIperf3Result from "./LastIperf3Result";
 import LastWebtestResult from "./LastWebtestResult";
+import {PlayCircle} from "@mui/icons-material";
+import DataGridButton from "./DataGridButton";
 
 const ClientList = ({clients}) => {
 
@@ -33,13 +33,13 @@ const ClientList = ({clients}) => {
     const ClientsGridColumns = [{field: '_id', headerName: 'ID', flex: 1.5}, {
         field: 'name',
         headerName: 'Name',
-        flex: 2
-    }, {field: 'mac', headerName: 'MAC Address', flex: 2}, {
-        field: 'lastIperf3', headerName: 'Last iPerf3 Result', flex: 2, renderCell: (params) => {
+        flex: 1
+    }, {field: 'mac', headerName: 'MAC Address', flex: 1}, {
+        field: 'lastIperf3', headerName: 'Last iPerf3 Result', flex: 1, renderCell: (params) => {
             return <LastIperf3Result lastIperf3={params.row.lastIperf3}/>
         }
     }, {
-        field: 'lastWebtest', headerName: 'Last WebTest Result', flex: 2, renderCell: (params) => {
+        field: 'lastWebtest', headerName: 'Last WebTest Result', flex: 1, renderCell: (params) => {
             return <LastWebtestResult lastWebtest={params.row.lastWebtest}/>
         }
     }, {
@@ -66,21 +66,22 @@ const ClientList = ({clients}) => {
             return val;
         }
     }, {
-        field: "action", headerName: "Action", sortable: false, flex: 1, renderCell: (params) => {
-            const onClick = (e) => {
-                e.stopPropagation(); // don't select this row after clicking
-                webtest(params.row);
+        field: "runIperf3", headerName: "Action", sortable: false, flex: 1, renderCell: (params) => {
+
+            const onClick = () => {
+                iperf3(params.row)
             };
 
-            const buttonStyle = {
-                borderRadius: 4
-            }
+            return (<DataGridButton onClick={onClick} icon={<PlayCircle/>} text='Run iPerf3'/>);
+        }
+    }, {
+        field: "runWebtest", headerName: "Action", sortable: false, flex: 1, renderCell: (params) => {
 
-            return (<div className='list center'>
-                <Button variant='contained' size='medium' style={buttonStyle} startIcon={<DeleteIcon/>}
-                        color='error'
-                        onClick={onClick} className='remove-btn'>Run Test</Button>
-            </div>);
+            const onClick = () => {
+                webtest(params.row)
+            };
+
+            return (<DataGridButton onClick={onClick} icon={<PlayCircle/>} text='Run WebTest'/>);
         }
     },]
 
