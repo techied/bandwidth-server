@@ -66,6 +66,23 @@ app.post('/run/iperf3', jsonParser, (req, res) => {
     res.sendStatus(200);
 });
 
+app.post('/run/webtest', jsonParser, async (req, res) => {
+    db.collection('sites').find().toArray((err, result) => {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        const sites = result;
+        const data = {
+            macs: req.body,
+            sites: sites,
+        }
+        io.emit('webtest', data);
+        console.log('Sites loaded', sites);
+    });
+    res.sendStatus(200);
+})
+
 app.get('/api/sites', (req, res) => {
     db.collection('sites').find().toArray((err, result) => {
         if (err) {

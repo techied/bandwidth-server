@@ -21,6 +21,13 @@ const ClientList = ({clients}) => {
         fetch('/run/iperf3', requestOptions);
     };
 
+    const webtest = (client) => {
+        const requestOptions = {
+            method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify([client.mac])
+        };
+        console.log(requestOptions);
+        fetch('/run/webtest', requestOptions);
+    }
 
     const ClientsGridColumns = [{field: '_id', headerName: 'ID', flex: 1.5}, {
         field: 'name',
@@ -57,7 +64,7 @@ const ClientList = ({clients}) => {
         field: "action", headerName: "Action", sortable: false, flex: 1, renderCell: (params) => {
             const onClick = (e) => {
                 e.stopPropagation(); // don't select this row after clicking
-                iperf3(params.row);
+                webtest(params.row);
             };
 
             const buttonStyle = {
