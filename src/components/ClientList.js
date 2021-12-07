@@ -35,11 +35,11 @@ const ClientList = ({clients}) => {
         headerName: 'Name',
         flex: 1
     }, {field: 'mac', headerName: 'MAC Address', flex: 1}, {
-        field: 'lastIperf3', headerName: 'Last iPerf3 Result', flex: 1, renderCell: (params) => {
+        field: 'lastIperf3', headerName: 'Last iPerf3', flex: 1, renderCell: (params) => {
             return <LastIperf3Result lastIperf3={params.row.lastIperf3}/>
         }
     }, {
-        field: 'lastWebtest', headerName: 'Last WebTest Result', flex: 1, renderCell: (params) => {
+        field: 'lastWebtest', headerName: 'Last WebTest', flex: 1, renderCell: (params) => {
             return <LastWebtestResult lastWebtest={params.row.lastWebtest}/>
         }
     }, {
