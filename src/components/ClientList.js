@@ -5,7 +5,8 @@ import {DataGrid} from "@mui/x-data-grid";
 import ReactTimeAgo from "react-time-ago";
 import {useState} from "react";
 import AddClientDialog from "./AddClientDialog";
-import LastTestResult from "./LastTestResult";
+import LastIperf3Result from "./LastIperf3Result";
+import LastWebtestResult from "./LastWebtestResult";
 
 const ClientList = ({clients}) => {
 
@@ -34,8 +35,12 @@ const ClientList = ({clients}) => {
         headerName: 'Name',
         flex: 2
     }, {field: 'mac', headerName: 'MAC Address', flex: 2}, {
-        field: 'lastTest', headerName: 'Last Test Result', flex: 2, renderCell: (params) => {
-            return <LastTestResult lastTest={params.row.lastTest}/>
+        field: 'lastIperf3', headerName: 'Last iPerf3 Result', flex: 2, renderCell: (params) => {
+            return <LastIperf3Result lastIperf3={params.row.lastIperf3}/>
+        }
+    }, {
+        field: 'lastWebtest', headerName: 'Last WebTest Result', flex: 2, renderCell: (params) => {
+            return <LastWebtestResult lastWebtest={params.row.lastWebtest}/>
         }
     }, {
         field: 'connected', headerName: 'Connected', flex: 1, renderCell: (params) => {

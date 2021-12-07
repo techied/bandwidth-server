@@ -52,7 +52,10 @@ app.get('/api/clients', async (req, res) => {
         let clients = result;
         for (const client of clients) {
             client.connected = socketClients.has(client.mac);
-            client.lastTest = await db.collection('iperf3').findOne({mac: client.mac}, {sort: {timestamp: -1}}).then(result => {
+            client.lastIperf3 = await db.collection('iperf3').findOne({mac: client.mac}, {sort: {timestamp: -1}}).then(result => {
+                return result;
+            });
+            client.lastWebtest = await db.collection('webtest').findOne({mac: client.mac}, {sort: {timestamp: -1}}).then(result => {
                 return result;
             });
         }
@@ -60,6 +63,18 @@ app.get('/api/clients', async (req, res) => {
         console.log('Clients loaded', clients);
     });
 });
+
+const getClient = async (mac) => {
+    return await db.collection('clients').findOne({mac: mac}).then(async client => {
+        client.lastIperf3 = await db.collection('iperf3').findOne({mac: mac}, {sort: {timestamp: -1}}).then(result => {
+            return result;
+        });
+        client.lastWebtest = await db.collection('webtest').findOne({mac: mac}, {sort: {timestamp: -1}}).then(result => {
+            return result;
+        });
+        return client;
+    });
+}
 
 app.post('/run/iperf3', jsonParser, (req, res) => {
     io.emit('iperf3', req.body);
@@ -97,7 +112,7 @@ app.get('/api/sites', (req, res) => {
 
 app.delete('/api/clients/remove', jsonParser, (req, res) => {
     const id = req.body._id;
-    db.collection('clients').deleteOne({_id: new ObjectId(id)}, (err, result) => {
+    db.collection('clients').deleteOne({_id: new ObjectId(id)}, (err) => {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -109,7 +124,7 @@ app.delete('/api/clients/remove', jsonParser, (req, res) => {
 
 app.delete('/api/sites/remove', jsonParser, (req, res) => {
     const id = req.body._id;
-    db.collection('sites').deleteOne({_id: new ObjectId(id)}, (err, result) => {
+    db.collection('sites').deleteOne({_id: new ObjectId(id)}, (err) => {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -160,7 +175,7 @@ io.on('connection', Socket => {
             if (socketId === Socket.id) {
                 socketClients.delete(mac);
                 console.log('Client disconnected', mac);
-                db.collection('clients').findOneAndUpdate({mac: mac}, {$set: {lastSeen: new Date(new Date().toISOString())}}, (err, result) => {
+                db.collection('clients').findOneAndUpdate({mac: mac}, {$set: {lastSeen: new Date(new Date().toISOString())}}, (err) => {
                     if (err) {
                         console.error(err);
                         process.exit(1);
@@ -181,25 +196,25 @@ io.on('connection', Socket => {
             }
         });
     });
-    Socket.on('iperf3 results', results => {
+    Socket.on('iperf3 results', async results => {
         results.timestamp = new Date(new Date().toISOString());
-        db.collection('iperf3').insertOne(results, (err, result) => {
+        db.collection('iperf3').insertOne(results, (err) => {
             if (err) {
                 console.error(err);
                 process.exit(1);
             }
         });
 
-        // get mac for socket id from socketClients
-        socketClients.forEach((socketId, mac) => {
-            if (socketId === Socket.id) {
-                db.collection('clients').findOne({mac: mac}).then(result => {
-                    result.lastTest = results;
-                    result.connected = true;
-                    io.emit('client update', result);
-                });
+        io.emit('client update', await getClient(results.mac));
+    });
+    Socket.on('webtest results', async results => { //sio.emit('webtest results', {"mac": mac, "results": results})
+        results.timestamp = new Date(new Date().toISOString());
+        db.collection('webtest').insertOne(results, (err) => {
+            if (err) {
+                console.error(err);
+                process.exit(1);
             }
         });
-
+        io.emit('client update', await getClient(results.mac));
     });
 });

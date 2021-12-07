@@ -18,8 +18,8 @@ const getReadableFileSizeString = (fileSizeInBytes) => {
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
-const LastTestResult = ({lastTest}) => {
-    return (<p>{lastTest == null ? 'None' : getReadableFileSizeString(lastTest.bits_per_second)}</p>)
+const LastIperf3Result = ({lastIperf3}) => {
+    return (<p>{lastIperf3 == null ? 'None' : getReadableFileSizeString(lastIperf3.bits_per_second)}</p>)
 }
 
-export default LastTestResult;
+export default LastIperf3Result;
