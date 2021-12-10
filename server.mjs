@@ -25,7 +25,7 @@ const socketClients = new Map();
 
 // noinspection JSCheckFunctionSignatures
 const mongoClient = new MongoClient(uri, {
-    useNewUrlParser: true, useUnifiedTopology: true
+    useNewUrlParser: true, useUnifiedTopology: true,
 });
 
 mongoClient.connect(err => {
