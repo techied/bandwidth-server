@@ -35,7 +35,7 @@ if [[ -v DOWNLOADED ]]; then
     Description=\"Bandwidth Server\"
 
     [Service]
-    ExecStart=/usr/bin/node server.mjs
+    ExecStart=/usr/bin/bash /root/start-server.sh
     WorkingDirectory=/root/bandwidth-server
     Restart=always
     RestartSec=10
@@ -49,6 +49,14 @@ if [[ -v DOWNLOADED ]]; then
     "
 
     echo "$service" | sudo tee /etc/systemd/system/bandwidth-server.service
+
+    startscript="
+    #!/bin/bash
+    source /root/.nvm/nvm.sh
+    node /root/bandwidth-server/server.mjs
+    "
+
+    echo "$startscript" | sudo tee /root/start-server.sh
 
     sudo systemctl daemon-reload
     sudo systemctl enable bandwidth-server
