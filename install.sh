@@ -29,6 +29,31 @@ if [[ -v DOWNLOADED ]]; then
       echo "Connection string: $CONNECTION_STRING"
       ;;
     esac
+
+    service="
+    [Unit]
+    Description=\"Bandwidth Server\"
+
+    [Service]
+    ExecStart=/usr/bin/node server.mjs
+    WorkingDirectory=/root/bandwidth-server
+    Restart=always
+    RestartSec=10
+    StandardOutput=syslog
+    StandardError=syslog
+    SyslogIdentifier=BandwidthServer
+    Environment=NODE_ENV=production
+
+    [Install]
+    WantedBy=multi-user.target
+    "
+
+    echo "$service" | sudo tee /etc/systemd/system/bandwidth-server.service
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable bandwidth-server
+    sudo systemctl start bandwidth-server
+
     exit 0
   fi
 fi
