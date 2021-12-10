@@ -83,6 +83,14 @@ if [[ -v DOWNLOADED ]]; then
     sudo systemctl enable iperf3
     sudo systemctl start iperf3
 
+    SERVER_IP=$(curl -s "http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address")
+
+    echo "############################################################"
+    echo "Installation complete"
+    echo "You can connect to the server in your browser at:"
+    echo "http://$SERVER_IP:3001"
+    echo "############################################################"
+
     exit 0
   fi
 fi
