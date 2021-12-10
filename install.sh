@@ -5,6 +5,8 @@ if [[ -v DOWNLOADED ]]; then
     echo "Download complete"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
     source ~/.bashrc
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     nvm install 16
     apt install -y dialog
     MONGODB_INSTALLATION=$(dialog --clear --title "Install MongoDB locally?" --menu "Choose whether you would like to install MongoDB locally, and use the local server, or connect to another server with a connection URL:" 15 40 4 \
