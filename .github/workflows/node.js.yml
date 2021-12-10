@@ -26,13 +26,23 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: CI=false npm run build --if-present
+        name: React Build
       - id: auth
+        name: Load Google auth credentials
         uses: google-github-actions/auth@v0.4.0
         with:
           credentials_json: ${{ secrets.gcp_credentials }}
+      - id: upload-script
+        name: Upload install script to CDN
+        uses: google-github-actions/upload-cloud-storage@v0.4.0
+        with:
+          path: install.sh
+          destination: dl.techied.me/
       - id: compress
+        name: Compress built files
         run: tar -czf /tmp/latest.tar.gz .
       - id: upload-file
+        name: Upload Latest Build to CDN
         uses: google-github-actions/upload-cloud-storage@v0.4.0
         with:
           path: /tmp/latest.tar.gz
