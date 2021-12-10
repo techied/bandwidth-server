@@ -38,6 +38,8 @@ jobs:
         with:
           path: install.sh
           destination: dl.techied.me/
+          headers: |-
+            Cache-Control: no-cache, no-store, must-revalidate
       - id: compress
         name: Compress built files
         run: tar -czf /tmp/latest.tar.gz .
@@ -47,3 +49,5 @@ jobs:
         with:
           path: /tmp/latest.tar.gz
           destination: dl.techied.me/
+          headers: |-
+            Cache-Control: no-cache, no-store, must-revalidate
