@@ -8,7 +8,7 @@ if [[ -v DOWNLOADED ]]; then
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     nvm install 16
-    apt install -y dialog
+    apt install -y dialog iperf3
     MONGODB_INSTALLATION=$(dialog --clear --title "Install MongoDB locally?" --menu "Choose whether you would like to install MongoDB locally, and use the local server, or connect to another server with a connection URL:" 15 40 4 \
       1 "Install Locally" \
       2 "Enter Connection String" 2>&1 >/dev/tty)
@@ -58,9 +58,24 @@ if [[ -v DOWNLOADED ]]; then
 
     echo "$startscript" | sudo tee /root/start-server.sh
 
+    iperf3service="
+    [Unit]
+    Description=iperf3 server
+    After=syslog.target network.target auditd.service
+
+    [Service]
+    ExecStart=/usr/bin/iperf3 -s
+
+    [Install]
+    WantedBy=multi-user.target"
+
+    echo "$iperf3service" | sudo tee /etc/systemd/system/iperf3.service
+
     sudo systemctl daemon-reload
     sudo systemctl enable bandwidth-server
     sudo systemctl start bandwidth-server
+    sudo systemctl enable iperf3
+    sudo systemctl start iperf3
 
     exit 0
   fi
