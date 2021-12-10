@@ -34,7 +34,7 @@ jobs:
           credentials_json: ${{ secrets.gcp_credentials }}
       - id: upload-script
         name: Upload install script to CDN
-        uses: google-github-actions/upload-cloud-storage@v0.4.0
+        uses: google-github-actions/upload-cloud-storage@e2673068897289f29bd311609b8ecf0cda0d988c
         with:
           path: install.sh
           destination: dl.techied.me/
@@ -45,7 +45,7 @@ jobs:
         run: tar -czf /tmp/latest.tar.gz .
       - id: upload-file
         name: Upload Latest Build to CDN
-        uses: google-github-actions/upload-cloud-storage@v0.4.0
+        uses: google-github-actions/upload-cloud-storage@e2673068897289f29bd311609b8ecf0cda0d988c
         with:
           path: /tmp/latest.tar.gz
           destination: dl.techied.me/
