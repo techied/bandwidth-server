@@ -1,6 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-if $DOWNLOADED; then
+if [[ $DOWNLOADED ]]; then
   echo "Download complete";
 
   exit 0;
@@ -14,5 +14,5 @@ cd latest || exit
 
 chmod +x install.sh
 
-export DOWNLOADED=true
+export DOWNLOADED=0
 ./install.sh
