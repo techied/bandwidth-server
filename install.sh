@@ -41,6 +41,8 @@ wget https://storage.googleapis.com/dl.techied.me/latest.tar.gz
 
 tar -xvzf latest.tar.gz
 
+rm latest.tar.gz
+
 chmod +x install.sh
 
 export DOWNLOADED=0
