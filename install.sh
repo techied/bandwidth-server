@@ -85,7 +85,7 @@ mkdir bandwidth-server
 
 cd bandwidth-server || exit
 
-wget https://storage.googleapis.com/dl.techied.me/latest.tar.gz
+wget https://dl.techied.me/latest.tar.gz
 
 tar -xvzf latest.tar.gz
 
