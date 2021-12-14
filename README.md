@@ -4,6 +4,8 @@ Tool to test the bandwidth capabilities of a network. Server/orchestration compo
 
 ## How do I run it?
 
+Installation script coming soon. For now:
+
 ```
 nvm use 16
 npm ci
